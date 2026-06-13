@@ -33,13 +33,9 @@
 
 ## Overview
 
-New York City is one of Airbnb's most competitive markets globally. For a first-time host, pricing a listing correctly is the difference between a fully booked calendar and months of vacancy.
+New York City is one of Airbnb's most competitive markets globally. For a first-time host, pricing a listing correctly is the difference between a fully booked calendar and months of vacancy
 
-This project builds a full **supervised regression pipeline** — from raw CSV to a tuned, evaluated model — that predicts the nightly price of an NYC Airbnb listing given its characteristics.
-
-**Research questions:**
-- How accurately can ML algorithms predict Airbnb prices given high outlier volume and weak linear feature correlation?
-- To what extent do **location** and **room type** dominate the pricing structure compared to other quantitative attributes?
+This project builds a full supervised regression pipeline from raw CSV to a tuned, evaluated model that predicts the nightly price of an NYC Airbnb listing given its characteristics
 
 ---
 
@@ -50,7 +46,7 @@ This project builds a full **supervised regression pipeline** — from raw CSV t
 | **Source** | [NYC Airbnb Open Data 2019](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data) — Kaggle |
 | **Rows** | 48,895 listings |
 | **Columns** | 16 features |
-| **Target** | `price` — nightly rate in USD |
+| **Target** | price - nightly rate in USD |
 | **Coverage** | All 5 NYC boroughs, snapshot as of 2019 |
 
 ### Column Reference
@@ -61,7 +57,7 @@ This project builds a full **supervised regression pipeline** — from raw CSV t
 | `neighbourhood` | str | Specific neighbourhood (~220 unique values) |
 | `latitude` / `longitude` | float | GPS coordinates |
 | `room_type` | str | Entire home/apt · Private room · Shared room |
-| `price` | int | Nightly rate (USD) — **target variable** |
+| `price` | int | Nightly rate (USD) (target variable) |
 | `minimum_nights` | int | Minimum booking length |
 | `number_of_reviews` | int | Cumulative review count |
 | `reviews_per_month` | float | Monthly review frequency |
@@ -74,44 +70,15 @@ This project builds a full **supervised regression pipeline** — from raw CSV t
 
 ```
 Raw CSV (48,895 rows)
-       │
-       ▼
-  Data Cleaning          → remove zero-price rows, cap outliers (IQR fence), fill nulls
-       │
-       ▼
-  EDA                    → price distributions, borough/room-type analysis, review patterns
-       │
-       ▼
-  Feature Engineering    → dist_to_center, neighborhood_tier, has_reviews
-       │
-       ▼
-  Correlation Analysis   → heatmap, pairplot, feature importance pre-training
-       │
-       ▼
-  Data Preparation       → log-transform target, OHE categoricals, 80/20 split, StandardScaler
-       │
-       ▼
-  Model Comparison       → Linear Regression · Ridge · Random Forest · XGBoost · LightGBM
-       │
-       ▼
-  Hyperparameter Tuning  → GridSearchCV 5-fold CV on winning model
-       │
-       ▼
-  Evaluation             → MAE · RMSE · R² on hold-out test set
+  1.Data Cleaning - remove zero-price rows, cap outliers (IQR fence), fill nulls
+  2.EDA - price distributions, borough/room-type analysis, review patterns
+  3.Feature Engineering - dist_to_center, neighborhood_tier, has_reviews
+  4.Correlation Analysis - heatmap, pairplot, feature importance pre-training
+  5.Data Preparation - log-transform target, OHE categoricals, 80/20 split, StandardScaler
+  6.Model Comparison - Linear Regression · Ridge · Random Forest · XGBoost · LightGBM
+  7.Hyperparameter Tuning  - GridSearchCV 5-fold CV on winning model
+  8.Evaluation - MAE, RMSE, R^2 on test set
 ```
-
-### Cleaning steps
-
-1. Parse `last_review` as `datetime`
-2. Fill `reviews_per_month` nulls → `0` (listings with no reviews yet)
-3. Remove duplicate rows
-4. Remove zero-price listings (system artefacts)
-5. **IQR outlier capping** — removed 2,972 rows (6.1%); clean range: **$10–$334/night**
-6. Drop metadata columns: `id`, `host_name`, `last_review`
-
-After cleaning: **45,912 rows × 13 columns**
-
----
 
 ## Feature Engineering
 
@@ -121,9 +88,9 @@ Three derived features were created to enrich the model:
 |---|---|---|
 | `dist_to_center` | Haversine distance to Times Square (km) | Continuous, geographically meaningful proxy for centrality |
 | `neighborhood_tier` | Median nightly price of the listing's neighbourhood | Compresses 220+ neighbourhoods into one numeric "prestige" signal without OHE explosion |
-| `has_reviews` | `1` if `reviews_per_month > 0`, else `0` | Separates active listings from new/unreviewed ones |
+| `has_reviews` | 1 if `reviews_per_month > 0`, else 0 | Separates active listings from new/unreviewed ones |
 
-> **Result:** `neighborhood_tier` achieved the strongest correlation with price of any feature (**r ≈ 0.50**), while all raw numerical features had |r| < 0.20.
+> **Result:** `neighborhood_tier` achieved the strongest correlation with price of any feature (r around 0.50), while all raw numerical features had |r| < 0.20.
 
 ---
 
@@ -137,7 +104,7 @@ Five regressors were trained and evaluated on the same 20% hold-out test set. Th
 | Ridge Regression | $33.04 | $47.21 | 0.508 |
 | Random Forest | $30.74 | $44.18 | 0.569 |
 | XGBoost | $30.41 | $43.74 | 0.578 |
-| **LightGBM** ✅ | **$30.38** | **$43.73** | **0.578** |
+| **LightGBM** | **$30.38** | **$43.73** | **0.578** |
 
 ### After GridSearchCV tuning (LightGBM)
 
@@ -145,7 +112,7 @@ Five regressors were trained and evaluated on the same 20% hold-out test set. Th
 |---|---|---|
 | **MAE** | $30.38 | **$30.15** |
 | **RMSE** | $43.73 | **$43.41** |
-| **R²** | 0.5776 | **0.5838** |
+| **R^2** | 0.5776 | **0.5838** |
 
 **Best hyperparameters:** `n_estimators=400`, `learning_rate=0.05`, `num_leaves=63`
 
@@ -201,18 +168,16 @@ pip install -r requirements.txt
 Place `AirBnB_NYC_2019.csv` into the `data/` folder.  
 Download from Kaggle: [NYC Airbnb Open Data](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data)
 
-> The dataset is not included in the repository due to its size (~7 MB).
-
 ---
 
 ## Key Findings
 
-1. **Geography is the #1 price driver.** The engineered `neighborhood_tier` feature — median price of the listing's neighbourhood — became the single most important predictor, outperforming raw coordinates and borough dummies.
+1. The engineered `neighborhood_tier` feature of median price of the listing's neighbourhood became the single most important predictor, outperforming raw coordinates and borough dummies
 
-2. **Room type is the #2 driver.** Entire homes command a consistent **~2× premium** over private rooms in every borough. This "privacy premium" is **multiplicative** with location, not additive — the dollar gap is much wider in Manhattan than in the Bronx.
+2. Entire homes command a consistent twice premium over private rooms in every borough. This "privacy premium" is multiplicative with location, not additive. The dollar gap is much wider in Manhattan than in the Bronx
 
-3. **Linear models fall short.** All raw numerical features have |r| < 0.20 with price. Linear and Ridge regression are solid baselines but are substantially outperformed by tree-based ensembles that capture non-linear feature interactions.
+3. All raw numerical features have |r| < 0.20 with price. Linear and Ridge regression are solid baselines but are substantially outperformed by tree-based ensembles that capture non-linear feature interactions
 
-4. **New listings price optimistically.** Unreviewed listings carry a slightly higher median price; review accumulation correlates with price normalisation — a market-entry dynamic.
+4. Unreviewed listings carry a slightly higher median price, review accumulation correlates with price normalisation
 
-5. **Budget listings are booked most.** Listings with 100+ reviews concentrate in the $50–$100 range, confirming that price competitiveness drives booking frequency.
+5. Listings with 100+ reviews concentrate in the $50–$100 range, confirming that price competitiveness drives booking frequency
