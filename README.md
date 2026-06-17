@@ -2,19 +2,7 @@
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/1280px-Airbnb_Logo_B%C3%A9lo.svg.png" width="140" alt="Airbnb">
 </p>
 
-<h1 align="center">NYC Airbnb Price Prediction</h1>
-<p align="center">
-  End-to-end machine learning pipeline for predicting nightly rental prices on Airbnb&nbsp;NYC
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.12-blue?logo=python" alt="Python">
-  <img src="https://img.shields.io/badge/LightGBM-4.6.0-brightgreen" alt="LightGBM">
-  <img src="https://img.shields.io/badge/scikit--learn-1.8.0-orange" alt="sklearn">
-  <img src="https://img.shields.io/badge/dataset-Kaggle-20BEFF?logo=kaggle" alt="Kaggle">
-</p>
-
----
+<h1 align="center">AirBnB Smart Pricing Functionality</h1>
 
 ## Table of Contents
 
